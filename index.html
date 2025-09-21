@@ -12,15 +12,217 @@
 <body class="bg-[linear-gradient(180deg,#f8fafc,white)] text-gray-900">
   <div id="root"></div>
   <script type="text/babel">
-    function App() {
-      return (
-        <div className='p-6'>
-          <h1 className='text-2xl font-bold mb-4'>Тренажёр первой помощи</h1>
-          <p>Работает! Здесь будет полная версия сайта с Теорией, Заданиями и Тестами.</p>
-        </div>
-      );
+    const cn = (...cls) => cls.filter(Boolean).join(" ");
+
+    // === Теория
+    const theoryBlocks = [
+      { t: "Общий алгоритм (РКК)", items: [
+        "Безопасность места • перчатки",
+        "Первичный осмотр: сильное кровотечение → сознание → дыхание (≤10 сек)",
+        "Вызов 112/103: кто, что, где, сколько пострадавших, их состояние",
+        "Первая помощь по приоритету",
+        "Вторичный осмотр и контроль до прибытия бригады",
+      ]},
+      { t: "Кровотечения", items: [
+        "Давящая повязка — первый шаг",
+        "Жгут — при массивном кровотечении, ВЫШЕ раны, время зафиксировать",
+        "Инородное тело не извлекать, фиксировать повязкой вокруг",
+      ]},
+      { t: "Удушье (полная непроходимость)", items: [
+        "Признаки: не может говорить/дышать, цианоз, жест 'руки к горлу'",
+        "5 ударов по спине → 5 толчков Геймлиха, циклы повторять",
+        "Потеря сознания — СЛР 30:2",
+      ]},
+      { t: "Без сознания", items: [
+        "Проверить реакцию: 'Вам нужна помощь?'",
+        "Открыть дыхательные пути, дыхание ≤10 сек",
+        "Дыхание есть → устойчивое боковое положение, контроль",
+        "Дыхания нет → вызвать 112 и СЛР 30:2",
+      ]},
+      { t: "Ожоги", items: [
+        "Охлаждать водой 10–15 минут",
+        "Сухая стерильная повязка",
+        "Не мазать кремами, не вскрывать пузыри, лёд не прикладывать",
+      ]},
+      { t: "Носовое кровотечение", items: [
+        "Посадить, наклонить вперёд",
+        "Прижать крылья носа 10 минут, холод на переносицу",
+        "Не запрокидывать голову",
+      ]},
+      { t: "Судороги", items: [
+        "Убрать предметы вокруг, под голову мягкое",
+        "Ничего не класть в рот, не удерживать силой",
+        "После — боковое положение, контроль дыхания, вызвать 112",
+      ]},
+      { t: "Анафилаксия", items: [
+        "Вызвать 112, уложить/полусидя",
+        "Адреналин-автоинъектор, если есть",
+        "Готовность к СЛР",
+      ]},
+    ];
+
+    // === Задания (10)
+    const tasks = [
+      { title: "Потеря сознания на улице", situation: "Подросток внезапно падает, не реагирует.", answer: [
+        "Безопасность, перчатки",
+        "Проверка сознания: 'Вам нужна помощь?'",
+        "Открыть дыхательные пути, дыхание ≤10 сек",
+        "Дыхание есть → боковое, контроль",
+        "Нет дыхания → 112, СЛР 30:2"
+      ], dont: ["Не трясти", "Не поить", "Не оставлять без контроля"]},
+      { title: "Ожог от костра", situation: "Кожа красная, пузыри.", answer: [
+        "Прекратить воздействие жара",
+        "Охлаждать водой 10–15 мин",
+        "Сухая стерильная повязка, при обширности — 112"
+      ], dont: ["Не мазать", "Не прокалывать пузыри", "Не лёд"]},
+      { title: "Кровотечение из головы", situation: "Рассечена кожа головы, кровь течёт.", answer: [
+        "Перчатки", "Прижать, повязка", "Усадить, вызвать 112"
+      ], dont: ["Не давить при переломе", "Не оставлять"]},
+      { title: "Укус собаки", situation: "Рваная рана ноги, кровит.", answer: [
+        "Безопасность", "Промыть водой с мылом", "Повязка", "112/медучреждение"
+      ], dont: ["Не игнорировать", "Не зашивать"]},
+      { title: "Аллергическая реакция", situation: "Отёк губ, сыпь, трудное дыхание.", answer: [
+        "112", "Полусидя", "Адреналин-автоинъектор", "Контроль дыхания, готовность к СЛР"
+      ], dont: ["Не еду/воду", "Не оставлять одного"]},
+      { title: "Судороги", situation: "Судороги, пена у рта.", answer: [
+        "Убрать предметы", "Под голову мягкое", "Не класть в рот", "После — боковое, 112"
+      ], dont: ["Не удерживать силой", "Не вставлять предметы"]},
+      { title: "Падение с лестницы", situation: "Боль в спине, не может встать.", answer: [
+        "Безопасность", "Не двигать", "Фиксировать голову/шею", "112"
+      ], dont: ["Не усаживать", "Не поднимать"]},
+      { title: "Поперхивание едой", situation: "Не дышит, лицо синеет.", answer: [
+        "5 ударов по спине", "Неэффективно → 5 Геймлиха", "Циклы", "Потеря сознания → СЛР"
+      ], dont: ["Не лезть руками", "Не давать воду"]},
+      { title: "Порез руки", situation: "Глубокий порез, кровь идёт.", answer: [
+        "Перчатки", "Прижать, повязка", "Жгут выше при сильном кровотечении", "112 при глубокой ране"
+      ], dont: ["Не посыпать", "Не оставлять открытым"]},
+      { title: "Потеря сознания на спорте", situation: "Упал, дыхания нет.", answer: [
+        "Безопасность", "Сознание → дыхание ≤10 сек", "112", "СЛР 30:2, 100–120/мин, глубина 5–6 см"
+      ], dont: ["Не откладывать СЛР", "Не поверхностные компрессии"]},
+    ];
+
+    // === Тест 20 вопросов
+    const quiz20 = [
+      { q: "Сколько времени отводится на оценку дыхания у без сознания?", options: ["до 5 сек", "до 10 сек", "до 20 сек"], correct: 1 },
+      { q: "Приоритет первичного осмотра по РКК:", options: ["Сознание → дыхание → кровотечение", "Кровотечение → сознание → дыхание", "Дыхание → сознание → кровотечение"], correct: 1 },
+      { q: "Первое действие при сильном кровотечении:", options: ["Жгут ниже раны", "Давящая повязка/прямое давление", "Промыть водой"], correct: 1 },
+      { q: "Жгут накладывают:", options: ["Ниже раны", "Выше раны", "На рану"], correct: 1 },
+      { q: "Время наложения жгута:", options: ["Не требуется", "Обязательно зафиксировать и озвучить", "Только если спросили"], correct: 1 },
+      { q: "Инородное тело в ране:", options: ["Извлечь", "Не извлекать, фиксировать вокруг", "Продавить внутрь"], correct: 1 },
+      { q: "Алгоритм при удушье:", options: ["5 ударов по спине → 5 приёмов Геймлиха", "Сразу СЛР", "Дать воды"], correct: 0 },
+      { q: "При дыхании у без сознания:", options: ["Устойчивое боковое положение", "Сидя", "На спине"], correct: 0 },
+      { q: "Оценка дыхания длится:", options: ["до 10 сек", "до 30 сек", "пока не определю"], correct: 0 },
+      { q: "Соотношение СЛР у взрослых:", options: ["15:2", "30:2", "50:5"], correct: 1 },
+      { q: "Частота компрессий при СЛР:", options: ["60–80/мин", "100–120/мин", "140–160/мин"], correct: 1 },
+      { q: "Глубина компрессий у взрослого:", options: ["3–4 см", "5–6 см", "7–8 см"], correct: 1 },
+      { q: "Носовое кровотечение — голова:", options: ["Назад", "Вперёд", "Вбок"], correct: 1 },
+      { q: "Ожог — первое действие:", options: ["Охлаждение водой 10–15 мин", "Мазь/масло", "Лёд"], correct: 0 },
+      { q: "Судороги — что не делать:", options: ["Вставлять предмет в рот", "Убрать предметы", "Под голову мягкое"], correct: 0 },
+      { q: "После судорог:", options: ["Боковое положение", "На спине", "Посадить"], correct: 0 },
+      { q: "При анафилаксии:", options: ["Дать воды", "112/103, адреналин-автоинъектор", "Ждать"], correct: 1 },
+      { q: "Согласие на помощь:", options: ["Вам нужна помощь?", "Вы кто?", "Где болит?"], correct: 0 },
+      { q: "Без сознания — согласие:", options: ["Расписка", "Подразумевается автоматически", "Спросить у друзей"], correct: 1 },
+      { q: "Вызов 112 — что назвать:", options: ["Только адрес", "Кто звонит, что произошло, где, сколько пострадавших, их состояние, контакт", "Только что произошло"], correct: 1 },
+    ];
+
+    function Header() {
+      return <header className='max-w-6xl mx-auto px-4 py-6'>
+        <h1 className='text-2xl font-bold'>Тренажёр: Первая помощь</h1>
+        <p className='text-slate-600'>Теория • 10 заданий • Тест-20</p>
+      </header>;
     }
-    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+    function Nav({page, setPage}) {
+      const tabs = [
+        {k:'theory', t:'1 · Теория'},
+        {k:'tasks', t:'2 · Задания'},
+        {k:'quiz', t:'3 · Тест-20'}
+      ];
+      return <nav className='max-w-6xl mx-auto px-4 pb-4 flex gap-2 flex-wrap'>
+        {tabs.map(tab=>(
+          <button key={tab.k} onClick={()=>setPage(tab.k)}
+            className={cn('px-3 py-2 rounded-2xl border text-sm',
+              page===tab.k?'bg-black text-white border-black':'bg-white hover:bg-gray-100 border-gray-300')}>{tab.t}</button>
+        ))}
+      </nav>;
+    }
+
+    function Theory() {
+      return <section className='max-w-6xl mx-auto px-4 pb-8 grid md:grid-cols-2 gap-4'>
+        {theoryBlocks.map((b,i)=>(
+          <div key={i} className='rounded-2xl border p-4 bg-white shadow-sm'>
+            <h3 className='font-semibold mb-2'>{b.t}</h3>
+            <ul className='list-disc ml-5 space-y-1 text-sm'>{b.items.map((it,j)=><li key={j}>{it}</li>)}</ul>
+          </div>
+        ))}
+      </section>;
+    }
+
+    function TaskCard({t,idx}) {
+      const [open,setOpen]=React.useState(false);
+      return <div className='rounded-2xl border p-4 bg-white'>
+        <div className='flex justify-between'><h4 className='font-semibold'>{idx+1}. {t.title}</h4>
+        <button onClick={()=>setOpen(!open)} className='text-sm px-3 py-1 rounded-xl border'>{open?'Скрыть':'Показать разбор'}</button></div>
+        <p className='opacity-80 mt-1'>{t.situation}</p>
+        {open && <div className='mt-3 grid md:grid-cols-2 gap-3 text-sm'>
+          <div className='border p-3 rounded-xl bg-green-50'><div className='font-medium mb-1'>✅ Алгоритм</div><ul className='list-disc ml-5'>{t.answer.map((a,i)=><li key={i}>{a}</li>)}</ul></div>
+          <div className='border p-3 rounded-xl bg-red-50'><div className='font-medium mb-1'>⚠️ Нельзя</div><ul className='list-disc ml-5'>{t.dont.map((d,i)=><li key={i}>{d}</li>)}</ul></div>
+        </div>}
+      </div>;
+    }
+
+    function Tasks(){return <section className='max-w-6xl mx-auto px-4 pb-8 space-y-4'>{tasks.map((t,i)=><TaskCard key={i} t={t} idx={i}/>)}</section>}
+
+    function Quiz20(){
+      const [answers,setAnswers]=React.useState(Array(quiz20.length).fill(null));
+      const [checked,setChecked]=React.useState(false);
+      const correctCount=answers.reduce((acc,a,i)=>acc+(a===quiz20[i].correct?1:0),0);
+      function setAns(i,v){if(!checked)setAnswers(arr=>arr.map((x,k)=>(k===i?v:x)));}
+      function check(){setChecked(true);}
+      function reset(){setAnswers(Array(quiz20.length).fill(null));setChecked(false);}
+      return <section className='max-w-6xl mx-auto px-4 pb-10'>
+        <div className='flex justify-between mb-3'><h3 className='font-semibold'>Тест-20</h3><div className='text-sm opacity-70'>Верно: {correctCount}/{quiz20.length}</div></div>
+        <div className='space-y-4'>{quiz20.map((q,i)=>(
+          <div key={i} className='border p-4 rounded-2xl bg-white'>
+            <div className='mb-2 font-medium'>{i+1}. {q.q}</div>
+            <div className='grid md:grid-cols-3 gap-2'>{q.options.map((opt,oi)=>{
+              const isSel=answers[i]===oi;const isC=checked&&oi===q.correct;const isW=checked&&isSel&&oi!==q.correct;
+              return <button key={oi} onClick={()=>setAns(i,oi)}
+                className={cn('px-3 py-2 rounded-xl border text-left',
+                  isSel&&!checked&&'border-black',
+                  isC&&'bg-green-50 border-green-400',
+                  isW&&'bg-red-50 border-red-400',
+                  !isSel&&!isC&&!isW&&'hover:bg-gray-50 border-gray-300')}>{opt}</button>
+            })}</div>
+            {checked&&<div className='mt-2 text-sm'>Правильный ответ: {String.fromCharCode(65+q.correct)}</div>}
+          </div>
+        ))}</div>
+        <div className='flex gap-3 mt-4'><button onClick={check} className='px-4 py-2 rounded-xl bg-black text-white'>Проверить</button><button onClick={reset} className='px-4 py-2 rounded-xl border'>Сбросить</button></div>
+      </section>;
+    }
+
+    function App(){
+      const [page,setPage]=React.useState('theory');
+      return <div className='min-h-screen'>
+        <header className='max-w-6xl mx-auto px-4 py-6'>
+          <div className='flex items-center justify-between gap-4'>
+            <h1 className='text-2xl md:text-3xl font-bold'>Подготовка к муниципальному этапу — Первая помощь</h1>
+            <span className='text-sm opacity-70'>Кемь · тренажёр</span>
+          </div>
+          <p className='mt-1 text-slate-600'>3 страницы: Теория · 10 заданий с разбором · Тест (20 вопросов) с проверкой.</p>
+        </header>
+        <Nav page={page} setPage={setPage}/>
+        {page==='theory'&&<Theory/>}{page==='tasks'&&<Tasks/>}{page==='quiz'&&<Quiz20/>}
+        <footer className='max-w-6xl mx-auto px-4 py-10 text-sm opacity-70'>
+          <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-2'>
+            <span>© Региональный чемпионат по оказанию первой помощи · Кемь</span>
+            <span>Тренажёр: Теория • 10 заданий • Тест-20</span>
+          </div>
+        </footer>
+      </div>;
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
   </script>
 </body>
 </html>
