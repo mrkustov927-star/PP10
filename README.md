@@ -1,20 +1,23 @@
-# First Aid Trainer — GitHub Pages (docs/)
+# First Aid Trainer — GitHub Pages
 
-Готовая версия сайта для публикации через **GitHub Pages** с папкой `/docs`.
+Готовая версия сайта-тренажёра по первой помощи. Основной файл сайта находится в корне репозитория: `index.html`.
 
 ## Публикация
-1. Создайте репозиторий на GitHub (например, `first-aid-trainer`).  
-2. Скопируйте папку `docs/` в корень репозитория.  
-3. Откройте **Settings → Pages**:  
-   - **Source**: Deploy from a branch  
-   - **Branch**: `main`  
-   - **Folder**: `/docs`  
-4. Нажмите **Save**. Через 1–3 минуты сайт будет доступен по адресу:  
+1. Откройте репозиторий на GitHub.
+2. Перейдите в **Settings → Pages**.
+3. Укажите настройки публикации:
+   - **Source**: Deploy from a branch
+   - **Branch**: `main`
+   - **Folder**: `/root`
+4. Нажмите **Save**. Через 1–3 минуты сайт будет доступен по адресу:
    `https://<логин>.github.io/<имя_репозитория>/`
 
+Для этого репозитория адрес:
+`https://mrkustov927-star.github.io/PP10/`
+
 ## Обновление контента
-Правьте `docs/index.html` прямо в GitHub — страница обновится автоматически.
+Правьте `index.html` прямо в GitHub — страница обновится автоматически после публикации GitHub Pages.
 
 ## Дополнительно
-- Иконка вкладки: положите `docs/favicon.ico` и добавьте в `<head>`: `<link rel="icon" href="favicon.ico">`  
-- Собственный домен: привяжите CNAME в Settings → Pages.
+- Иконка вкладки: положите `favicon.ico` в корень репозитория и добавьте в `<head>`: `<link rel="icon" href="favicon.ico">`.
+- Собственный домен: привяжите `CNAME` в Settings → Pages.
